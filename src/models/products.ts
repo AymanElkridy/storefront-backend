@@ -1,7 +1,7 @@
 import client from "../database";
 
 type Product = {
-    productId: number
+    product_id: number
     name: string
     price: number
     category: string
@@ -15,7 +15,7 @@ class ProductStore {
             const sql = "SELECT * FROM products"
             const result = await conn.query(sql)
             conn.release()
-            if (result.rowCount < 0) return 'There are no products yet!'
+            if (result.rowCount === 0) return 'There are no products yet!'
             return result.rows
         } catch (err) {
             throw new Error(`Cannot get products. ${err}`)
@@ -30,7 +30,7 @@ class ProductStore {
             const sql = `SELECT * FROM products WHERE product_id = ${id}`
             const result = await conn.query(sql)
             conn.release()
-            if (result.rowCount < 0) return 'Error: Product does not exist'
+            if (result.rowCount === 0) return 'Error: Product does not exist'
             return result.rows[0]
         } catch (err) {
             throw new Error(`Cannot get product. ${err}`)

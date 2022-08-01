@@ -16,19 +16,19 @@ class OrderStore {
         try {
             const conn = await client.connect()
             const sql = "SELECT * FROM orders"
-            const orders = (await conn.query(sql)).rows
-            if (orders.length > 0) {
-                for (let i = 0; i < orders.length; i++) {
-                    let sqlRelation = `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = ${orders[i].order_id}`
-                    const products = await conn.query(sqlRelation)
-                    orders[i].products = products.rows
-                }
-                conn.release()
-                return orders
-            } else {
+            const result = await conn.query(sql)
+            if (result.rowCount === 0) {
                 conn.release()
                 return 'There are no orders yet!'
             }
+            const orders = result.rows
+            for (let i = 0; i < orders.length; i++) {
+                let sqlRelation = `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = ${orders[i].order_id}`
+                const products = await conn.query(sqlRelation)
+                orders[i].products = products.rows
+            }
+            conn.release()
+            return orders
         } catch (err) {
             throw new Error(`Cannot get orders. ${err}`)
         }
@@ -40,18 +40,17 @@ class OrderStore {
         try {
             const conn = await client.connect()
             const sql = `SELECT * FROM orders WHERE order_id = ${id}`
-            const result = await (await conn.query(sql)).rows
-            if (result.length > 0) {
-                const order = result[0]
-                const sqlRelation = `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = ${order.order_id}`
-                const products = await conn.query(sqlRelation)
-                order.products = products.rows
-                conn.release()
-                return order
-            } else {
+            const result = await conn.query(sql)
+            if (result.rowCount === 0) {
                 conn.release()
                 return 'Error: Order does not exist.'
             }
+            const order = result.rows[0]
+            const sqlRelation = `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = ${order.order_id}`
+            const products = await conn.query(sqlRelation)
+            order.products = products.rows
+            conn.release()
+            return order
         } catch (err) {
             throw new Error(`Cannot get order. ${err}`)
         }

@@ -1,5 +1,171 @@
 import client from "../database";
 
 type Order = {
-    
+    order_id: number
+    products: {
+        product_id: number
+        quantity: number
+    }[]
+    user_id: number
+    status: string
 }
+
+class OrderStore {
+    index = async (
+    ): Promise<Order[] | string> => {
+        try {
+            const conn = await client.connect()
+            const sql = "SELECT * FROM orders"
+            const orders = (await conn.query(sql)).rows
+            if (orders.length > 0) {
+                for (let i = 0; i < orders.length; i++) {
+                    let sqlRelation = `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = ${orders[i].order_id}`
+                    const products = await conn.query(sqlRelation)
+                    orders[i].products = products.rows
+                }
+                conn.release()
+                return orders
+            } else {
+                conn.release()
+                return 'There are no orders yet!'
+            }
+        } catch (err) {
+            throw new Error(`Cannot get orders. ${err}`)
+        }
+    }
+
+    show = async (
+        id: number
+    ): Promise<Order | string> => {
+        try {
+            const conn = await client.connect()
+            const sql = `SELECT * FROM orders WHERE order_id = ${id}`
+            const result = await (await conn.query(sql)).rows
+            if (result.length > 0) {
+                const order = result[0]
+                const sqlRelation = `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = ${order.order_id}`
+                const products = await conn.query(sqlRelation)
+                order.products = products.rows
+                conn.release()
+                return order
+            } else {
+                conn.release()
+                return 'Error: Order does not exist.'
+            }
+        } catch (err) {
+            throw new Error(`Cannot get order. ${err}`)
+        }
+    }
+
+    create = async (
+        products: {
+            product_id: number
+            quantity: number
+        }[],
+        user_id: number,
+        status: string
+    ): Promise<Order> => {
+        try {
+            const conn = await client.connect()
+            const sql = `INSERT INTO orders (user_id, status) VALUES(${user_id}, '${status}')`
+            await conn.query(sql)
+            products.map(async product => {
+                const sqlRelation = `INSERT INTO relation_orders_products (order_id, product_id, quantity) VALUES (LASTVAL(), ${product.product_id}, ${product.quantity})`
+                await conn.query(sqlRelation)
+            })
+            const result = await (await conn.query('SELECT * FROM orders WHERE order_id = LASTVAL()')).rows[0]
+            const prods = await conn.query(
+                `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = LASTVAL()`
+            )
+            result.products = prods.rows
+            conn.release()
+            return result
+        } catch (err) {
+            throw new Error(`Cannot create order. ${err}`)
+        }
+    }
+
+    edit = async (
+        id: number,
+        options?: {
+            add?: {
+                product_id: number
+                quantity: number
+            }[],
+            change?: {
+                product_id: number
+                quantity: number
+            }[],
+            remove?: {
+                product_id: number
+            }[],
+            status?: string
+        }
+    ): Promise<Order> => {
+        try {
+            const conn = await client.connect()
+            if (options?.add) {
+                options.add.map(async product => {
+                    const check = await conn.query(`SELECT quantity FROM relation_orders_products WHERE order_id = ${id} AND product_id = ${product.product_id}`)
+                    if (check.rowCount == 0) {
+                        await conn.query(
+                            `INSERT INTO relation_orders_products (order_id, product_id, quantity)
+                             VALUES (${id}, ${product.product_id}, ${product.quantity})`
+                        )
+                    } else {
+                        const new_quantity: number = product.quantity + check.rows[0].quantity;
+                        await conn.query(
+                            `UPDATE relation_orders_products SET quantity = ${new_quantity}
+                             WHERE order_id = ${id} AND product_id = ${product.product_id}`
+                        )
+                    }
+                })
+            }
+            if (options?.change) {
+                options.change.map(async product => {
+                    await conn.query(
+                        `UPDATE relation_orders_products SET quantity = ${product.quantity}
+                         WHERE order_id = ${id} AND product_id = ${product.product_id}`
+                    )
+                })
+            }
+            if (options?.remove) {
+                options.remove.map(async product => {
+                    await conn.query(
+                        `DELETE FROM relation_orders_products
+                         WHERE order_id = ${id} AND product_id = ${product.product_id}`
+                    )
+                })
+            }
+            if (options?.status) await conn.query(`UPDATE orders SET status = '${options.status}' WHERE order_id = ${id}`)
+            const result = (await conn.query(`SELECT * FROM orders WHERE order_id = ${id}`)).rows[0]
+            const prods = await conn.query(
+                `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = ${id}`
+            )
+            result.products = prods.rows
+            conn.release()
+            return result
+        } catch (err) {
+            throw new Error(`Cannot edit order. ${err}`)
+        }
+    }
+
+    remove = async (
+        id: number
+    ): Promise<Order> => {
+        try {
+            const conn = await client.connect()
+            const result = (await conn.query(`SELECT * FROM orders WHERE order_id = ${id}`)).rows[0]
+            const sqlRelation = `DELETE FROM relation_orders_products WHERE order_id = ${id}`
+            await conn.query(sqlRelation)
+            const sql = `DELETE FROM orders WHERE order_id = ${id}`
+            await conn.query(sql)
+            conn.release()
+            return result
+        } catch (err) {
+            throw new Error(`Cannot remove order. ${err}`)
+        }
+    }
+}
+
+export default OrderStore

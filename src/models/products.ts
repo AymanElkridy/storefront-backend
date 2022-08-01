@@ -1,7 +1,7 @@
 import client from "../database";
 
 type Product = {
-    id: number
+    productId: number
     name: string
     price: number
     category: string
@@ -9,12 +9,13 @@ type Product = {
 
 class ProductStore {
     index = async (
-    ): Promise<Product[]> => {
+    ): Promise<Product[] | string> => {
         try {
             const conn = await client.connect()
             const sql = "SELECT * FROM products"
             const result = await conn.query(sql)
             conn.release()
+            if (result.rowCount < 0) return 'There are no products yet!'
             return result.rows
         } catch (err) {
             throw new Error(`Cannot get products. ${err}`)
@@ -23,12 +24,13 @@ class ProductStore {
 
     show = async (
         id: number
-    ): Promise<Product> => {
+    ): Promise<Product | string> => {
         try {
             const conn = await client.connect()
             const sql = `SELECT * FROM products WHERE product_id = ${id}`
             const result = await conn.query(sql)
             conn.release()
+            if (result.rowCount < 0) return 'Error: Product does not exist'
             return result.rows[0]
         } catch (err) {
             throw new Error(`Cannot get product. ${err}`)
@@ -44,7 +46,7 @@ class ProductStore {
             const conn = await client.connect()
             const sql = `INSERT INTO products(name, price, category) VALUES('${name}', ${price}, '${category}')`
             await conn.query(sql)
-            const result = await conn.query('SELECT *  FROM products WHERE product_id = LASTVAL()')
+            const result = await conn.query('SELECT * FROM products WHERE product_id = LASTVAL()')
             conn.release()
             return result.rows[0]
         } catch (err) {

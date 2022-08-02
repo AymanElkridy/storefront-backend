@@ -1,6 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import handle from './handlers/_handle'
+import handle from './handlers/_Handle'
 
 const app: express.Application = express()
 

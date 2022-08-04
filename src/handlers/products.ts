@@ -1,12 +1,14 @@
 import { Application, Request, Response } from 'express'
 import ProductStore from '../models/products'
+import authenticate, { authenticateUserId } from '../middleware/authenticate'
+import jwtDecode from 'jwt-decode'
 
 const productHandlers = (app: Application) => {
     app.get('/product', index)
     app.get('/product/:id', show)
-    app.post('/product', create)
-    app.put('/product/:id', edit)
-    app.delete('/product/:id', remove)
+    app.post('/product', authenticate, create)
+    app.put('/product/:id', authenticate, authenticateUserId, edit)
+    app.delete('/product/:id', authenticate, authenticateUserId, remove)
 }
 
 const store = new ProductStore()
@@ -26,7 +28,7 @@ const index = async (
 const show = async (
     req: Request,
     res: Response
-) => {
+ ) => {
     try {
         const response = await store.show(parseInt(req.params.id))
         res.json(response)
@@ -43,7 +45,8 @@ const create = async (
         const response = await store.create(
             req.body.name,
             parseFloat(req.body.price),
-            req.body.category
+            req.body.category,
+            (jwtDecode(req.body.token) as {user_id: number}).user_id
         )
         res.json(response)
     } catch (err) {

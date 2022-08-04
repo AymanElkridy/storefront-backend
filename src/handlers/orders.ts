@@ -1,12 +1,15 @@
 import { Application, Request, Response } from 'express'
 import OrderStore from '../models/orders'
+import jwtDecode from 'jwt-decode'
+import authenticate, { authenticateUser, authenticateUserId } from '../middleware/authenticate'
 
 const orderHandlers = (app: Application) => {
     app.get('/order', index)
     app.get('/order/:id', show)
-    app.post('/order', create)
-    app.put('/order/:id', edit)
-    app.delete('/order/:id', remove)
+    app.post('/order', authenticate, create)
+    app.put('/order/:id', authenticate, authenticateUserId, edit)
+    app.delete('/order/:id', authenticate, authenticateUserId, remove)
+    app.get('/order-by', authenticate, authenticateUser, orderBy)
 }
 
 const store = new OrderStore()
@@ -42,7 +45,7 @@ const create = async (
     try {
         const response = await store.create(
             req.body.products,
-            parseInt(req.body.user_id),
+            (jwtDecode(req.body.token) as {user_id: number}).user_id,
             req.body.status
         )
         res.json(response)
@@ -88,6 +91,19 @@ const remove = async (
 ) => {
     try {
         const response = await store.remove(parseInt(req.params.id))
+        res.json(response)
+    } catch (err) {
+        throw new Error(`Cannot remove order. ${err}`)
+    }
+}
+
+const orderBy = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+
+        const response = await store.orderBy(req.body.username, req.body.token)
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot remove order. ${err}`)

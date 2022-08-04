@@ -1,4 +1,4 @@
-import client from "../database";
+import client from '../database'
 
 type Product = {
     product_id: number
@@ -13,10 +13,10 @@ class ProductStore {
         try {
             const conn = await client.connect()
             const sql = "SELECT * FROM products"
-            const result = await conn.query(sql)
+            const result: Product[] = (await conn.query(sql)).rows
             conn.release()
-            if (result.rowCount === 0) return 'There are no products yet!'
-            return result.rows
+            if (result.length === 0) return 'There are no products yet!'
+            return result
         } catch (err) {
             throw new Error(`Cannot get products. ${err}`)
         }
@@ -28,10 +28,10 @@ class ProductStore {
         try {
             const conn = await client.connect()
             const sql = `SELECT * FROM products WHERE product_id = ${id}`
-            const result = await conn.query(sql)
+            const result = (await conn.query(sql)).rows
             conn.release()
-            if (result.rowCount === 0) return 'Error: Product does not exist'
-            return result.rows[0]
+            if (result.length === 0) return 'Error: Product does not exist'
+            return result[0]
         } catch (err) {
             throw new Error(`Cannot get product. ${err}`)
         }
@@ -40,15 +40,16 @@ class ProductStore {
     create = async (
         name: string,
         price: number,
-        category: string
+        category: string,
+        user_id: number
     ): Promise<Product> => {
         try {
             const conn = await client.connect()
-            const sql = `INSERT INTO products(name, price, category) VALUES('${name}', ${price}, '${category}')`
+            const sql = `INSERT INTO products(name, price, category, user_id) VALUES('${name}', ${price}, '${category}', ${user_id})`
             await conn.query(sql)
-            const result = await conn.query('SELECT * FROM products WHERE product_id = LASTVAL()')
+            const result: Product = (await conn.query('SELECT * FROM products WHERE product_id = LASTVAL()')).rows[0]
             conn.release()
-            return result.rows[0]
+            return result
         } catch (err) {
             throw new Error(`Cannot create product. ${err}`)
         }
@@ -67,9 +68,9 @@ class ProductStore {
             if (options?.name) await conn.query(`UPDATE products SET name = '${options.name}' WHERE product_id = ${id}`)
             if (options?.price) await conn.query(`UPDATE products SET price = '${options.price}' WHERE product_id = ${id}`)
             if (options?.category) await conn.query(`UPDATE products SET category = '${options.category}' WHERE product_id = ${id}`)
-            const result = await conn.query(`SELECT * FROM products WHERE product_id = ${id}`)
+            const result: Product = (await conn.query(`SELECT * FROM products WHERE product_id = ${id}`)).rows[0]
             conn.release()
-            return result.rows[0]
+            return result
         } catch (err) {
             throw new Error(`Cannot edit product. ${err}`)
         }
@@ -80,11 +81,11 @@ class ProductStore {
     ): Promise<Product> => {
         try {
             const conn = await client.connect()
-            const result = await conn.query(`SELECT * FROM products WHERE product_id = ${id}`)
+            const result: Product = (await conn.query(`SELECT * FROM products WHERE product_id = ${id}`)).rows[0]
             const sql = `DELETE FROM products WHERE product_id = ${id}`
             await conn.query(sql)
             conn.release()
-            return result.rows[0]
+            return result
         } catch (err) {
             throw new Error(`Cannot remove product. ${err}`)
         }

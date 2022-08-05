@@ -12,6 +12,8 @@
     "buildstart": "nodemon ./build/server.js --watch",
     "start": "npm run build && npm run buildstart",
     "watch": "tsc-watch --esModuleInterop src/server.ts --outDir ./build --onSuccess \"node ./build/server.js\"",
+    "dbup":"npx db-migrate up",
+    "dbreset":"npx db-migrate reset",
     "dbup-test":"npx db-migrate --e test up",
     "dbreset-test":"npx db-migrate --e test reset",
     "jasmine": "ts-node node_modules/jasmine/bin/jasmine",

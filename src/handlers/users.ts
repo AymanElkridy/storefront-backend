@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import UserStore from '../models/users'
 import authenticate, { authenticateUser } from '../middleware/authenticate'
 
+// Gathering all user handlers in one function
 const userHandlers = (app: Application) => {
     app.get('/user', authenticate, index)
     app.get('/user/:id', authenticate, show)
@@ -13,8 +14,10 @@ const userHandlers = (app: Application) => {
     app.get('/logout', logout)
 }
 
+// Creating an instance of user model
 const store = new UserStore
 
+// Handling index method - Returns all users - Available for any user
 const index = async (
     _req: Request,
     res: Response
@@ -32,6 +35,7 @@ const index = async (
     }
 }
 
+// Handling show method - Returns a specific user by user_id - Available for any user
 const show = async (
     req: Request,
     res: Response
@@ -49,6 +53,7 @@ const show = async (
     }
 }
 
+// Handling create method - Creates a new user - Available for all users and non-users
 const create = async (
     req: Request,
     res: Response
@@ -74,6 +79,7 @@ const create = async (
     }
 }
 
+// Handling edit method - Edits an existing user by username & password - Available for the user concerned
 const edit = async (
     req: Request,
     res: Response
@@ -100,6 +106,7 @@ const edit = async (
     }
 }
 
+// Handling remove method - Deletes a specific user by username & password - Available for the user concerned
 const remove = async (
     req: Request,
     res: Response
@@ -117,6 +124,7 @@ const remove = async (
     }
 }
 
+// Handling login method - Returns a token for existing user by username & password - Available for all users and non-users
 const login = async (
     req: Request,
     res: Response
@@ -140,6 +148,7 @@ const login = async (
     }
 }
 
+// Handling logout method - Currently does nothing but the idea seemed cool
 const logout = async (
     req: Request,
     res: Response

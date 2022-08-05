@@ -1,5 +1,6 @@
 import client from '../database'
 
+// Declaring Product Type
 type Product = {
     product_id: number
     name: string
@@ -7,6 +8,7 @@ type Product = {
     category: string
 }
 
+// Declaring Product Model
 class ProductStore {
     index = async (
     ): Promise<Product[] | string> => {

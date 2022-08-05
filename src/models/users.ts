@@ -2,10 +2,12 @@ import client from '../database'
 import bcrypt from 'bcrypt'
 import { PoolClient } from 'pg'
 
+// Getting Environment Variables
 const {SALT_ROUNDS, PEPPER} = process.env
 const saltRounds = parseInt(SALT_ROUNDS as string)
 const pepper = PEPPER as string
 
+// Declaring User Type
 type User = {
     user_id?: number
     username?: string
@@ -15,6 +17,7 @@ type User = {
     token?: string
 }
 
+// Declaring User Model
 class UsersStore {
     index = async (
     ): Promise<User[] | string> => {

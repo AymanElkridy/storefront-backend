@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 import { Pool } from 'pg'
 
+// Configuring environment variables
 dotenv.config()
 
 const {
@@ -11,7 +12,7 @@ const {
     POSTGRES_PASSWORD
 } = process.env
 
-// FOR DEV ENVIRONMENT
+// USE THIS FOR DEV ENVIRONMENT
 /* const client = new Pool({
     host: POSTGRES_HOST,
     database: POSTGRES_DB,
@@ -19,7 +20,7 @@ const {
     password: POSTGRES_PASSWORD
 }) */
 
-// FOR TEST ENVIRONMENT
+// USE THIS FOR TEST ENVIRONMENT
 const client = new Pool({
     host: POSTGRES_HOST,
     database: POSTGRES_TEST_DB,

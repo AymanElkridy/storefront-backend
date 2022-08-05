@@ -3,6 +3,7 @@ import OrderStore from '../models/orders'
 import jwtDecode from 'jwt-decode'
 import authenticate, { authenticateUser, authenticateUserId } from '../middleware/authenticate'
 
+// Gathering all order handlers in one function
 const orderHandlers = (app: Application) => {
     app.get('/order', index)
     app.get('/order/:id', authenticate, authenticateUserId, show)
@@ -12,8 +13,10 @@ const orderHandlers = (app: Application) => {
     app.get('/order-by', authenticate, authenticateUser, orderBy)
 }
 
+// Creating an instance of order model
 const store = new OrderStore()
 
+// Handling index method - Returns all orders - Available only using ADMIN_PASSWORD in Environment Variables
 const index = async (
     req: Request,
     res: Response
@@ -31,6 +34,7 @@ const index = async (
     }
 }
 
+// Handling show method - Returns a specific order by order_id - Available for the user owning the order
 const show = async (
     req: Request,
     res: Response
@@ -48,6 +52,7 @@ const show = async (
     }
 }
 
+// Handling create method - Creates a new order - Available for any user
 const create = async (
     req: Request,
     res: Response
@@ -68,6 +73,7 @@ const create = async (
     }
 }
 
+// Handling edit method - Edits an existing order by id - Available for the user owning the order
 const edit = async (
     req: Request,
     res: Response
@@ -104,6 +110,7 @@ const edit = async (
     }
 }
 
+// Handling remove method - Deletes a specific order by id - Available for the user owning the order
 const remove = async (
     req: Request,
     res: Response
@@ -121,6 +128,7 @@ const remove = async (
     }
 }
 
+// Handling orderBy method - Returns the latest active order by username - Available for the user owning the order
 const orderBy = async (
     req: Request,
     res: Response

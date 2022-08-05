@@ -1,5 +1,6 @@
 import client from '../database'
 
+// Declaring Order Type
 type Order = {
     order_id: number
     products: {
@@ -10,6 +11,7 @@ type Order = {
     status: string
 }
 
+// Declaring Order Model
 class OrderStore {
     index = async (
         admin_password: string

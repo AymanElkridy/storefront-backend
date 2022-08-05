@@ -3,6 +3,7 @@ import jwt, { Secret } from 'jsonwebtoken'
 import jwtDecode from 'jwt-decode'
 import client from '../database'
 
+// Confirming the existence of a token
 const authenticate = (
     req: Request,
     res: Response,
@@ -19,6 +20,7 @@ const authenticate = (
     }
 }
 
+// Confirming that the token belongs to the concerned user
 export const authenticateUser = async (
     req: Request,
     res: Response,
@@ -35,6 +37,7 @@ export const authenticateUser = async (
         }
 }
 
+// Confirming that the token belongs to the user owning the product/order
 export const authenticateUserId = async (
     req: Request,
     res: Response,

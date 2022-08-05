@@ -3,6 +3,7 @@ import ProductStore from '../models/products'
 import authenticate, { authenticateUserId } from '../middleware/authenticate'
 import jwtDecode from 'jwt-decode'
 
+// Gathering all product handlers in one function
 const productHandlers = (app: Application) => {
     app.get('/product', index)
     app.get('/product/:id', show)
@@ -11,8 +12,10 @@ const productHandlers = (app: Application) => {
     app.delete('/product/:id', authenticate, authenticateUserId, remove)
 }
 
+// Creating an instance of product model
 const store = new ProductStore()
 
+// Handling index method - Returns all products - Available for all users and non-users
 const index = async (
     _req: Request,
     res: Response
@@ -30,6 +33,7 @@ const index = async (
     }
 }
 
+// Handling show method - Returns a specific product by product_id - Available for all users and non-users
 const show = async (
     req: Request,
     res: Response
@@ -47,6 +51,7 @@ const show = async (
     }
 }
 
+// Handling create method - Creates a new product - Available for any user
 const create = async (
     req: Request,
     res: Response
@@ -69,6 +74,7 @@ const create = async (
     }
 }
 
+// Handling edit method - Edits an existing product by id - Available for the user owning the product
 const edit = async (
     req: Request,
     res: Response
@@ -95,6 +101,7 @@ const edit = async (
     }
 }
 
+// Handling remove method - Deletes a specific product by id - Available for the user owning the product
 const remove = async (
     req: Request,
     res: Response

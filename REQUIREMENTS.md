@@ -27,6 +27,11 @@ These are the notes from a meeting with the frontend developer that describe wha
 - price `price`
 - [OPTIONAL] category `category`
 
+##### products
+|product_id |name |price |category |user_id |
+|---:|---:|---:|---:|---:|
+|SERIAL PRIMARY KEY |VARCHAR(100) |FLOAT |VARCHAR(50) | INTEGER REFERENCES users(user_id)|
+
 #### User
 - id `user_id`
 - firstName `first_name`

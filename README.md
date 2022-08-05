@@ -20,7 +20,7 @@ There's a file named ***database.ts*** that defines the used database. While tes
 
 ## How To Use:
 1. **Create .env file:**</br>
-   Creat a file in the root directory named `.env` and add the following:
+   Create a file in the root directory named `.env` and add the following:
 ```
     POSTGRES_HOST=<host-name>
     POSTGRES_PORT=<port-number>
@@ -39,7 +39,7 @@ There's a file named ***database.ts*** that defines the used database. While tes
 3. **Migrate the database**
 4. **Start the server.**
 5. **Create a user:**</br>
-   Submit a post request through the `/user` route, providing the following in the request body:
+   Submit a POST request through the `/user` route, providing the following in the request body:
 ```
     {
         "username": string (a unique identifier for the user),
@@ -60,7 +60,7 @@ There's a file named ***database.ts*** that defines the used database. While tes
 ```
 
 6. **Create one or more products:**</br>
-   Submit a post request through the `/product` route, providing the following in the request body:
+   Submit a POST request through the `/product` route, providing the following in the request body:
 ```
     {
         "name": string,
@@ -79,7 +79,7 @@ There's a file named ***database.ts*** that defines the used database. While tes
 ```
 
 7. **Create one or more orders**</br>
-   Submit a post request through the `/order` route, providing the following in the request body:
+   Submit a POST request through the `/order` route, providing the following in the request body:
 ```
     {
         "products": [

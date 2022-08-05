@@ -12,7 +12,7 @@ class ProductStore {
     ): Promise<Product[] | string> => {
         try {
             const conn = await client.connect()
-            const sql = "SELECT * FROM products"
+            const sql = 'SELECT product_id, name, price, category FROM products'
             const result: Product[] = (await conn.query(sql)).rows
             conn.release()
             if (result.length === 0) return 'There are no products yet!'
@@ -27,7 +27,7 @@ class ProductStore {
     ): Promise<Product | string> => {
         try {
             const conn = await client.connect()
-            const sql = `SELECT * FROM products WHERE product_id = ${id}`
+            const sql = `SELECT product_id, name, price, category FROM products WHERE product_id = ${id}`
             const result = (await conn.query(sql)).rows
             conn.release()
             if (result.length === 0) return 'Error: Product does not exist'
@@ -47,7 +47,7 @@ class ProductStore {
             const conn = await client.connect()
             const sql = `INSERT INTO products(name, price, category, user_id) VALUES('${name}', ${price}, '${category}', ${user_id})`
             await conn.query(sql)
-            const result: Product = (await conn.query('SELECT * FROM products WHERE product_id = LASTVAL()')).rows[0]
+            const result: Product = (await conn.query('SELECT product_id, name, price, category FROM products WHERE product_id = LASTVAL()')).rows[0]
             conn.release()
             return result
         } catch (err) {
@@ -68,7 +68,7 @@ class ProductStore {
             if (options?.name) await conn.query(`UPDATE products SET name = '${options.name}' WHERE product_id = ${id}`)
             if (options?.price) await conn.query(`UPDATE products SET price = '${options.price}' WHERE product_id = ${id}`)
             if (options?.category) await conn.query(`UPDATE products SET category = '${options.category}' WHERE product_id = ${id}`)
-            const result: Product = (await conn.query(`SELECT * FROM products WHERE product_id = ${id}`)).rows[0]
+            const result: Product = (await conn.query(`SELECT product_id, name, price, category FROM products WHERE product_id = ${id}`)).rows[0]
             conn.release()
             return result
         } catch (err) {
@@ -81,7 +81,7 @@ class ProductStore {
     ): Promise<Product> => {
         try {
             const conn = await client.connect()
-            const result: Product = (await conn.query(`SELECT * FROM products WHERE product_id = ${id}`)).rows[0]
+            const result: Product = (await conn.query(`SELECT product_id, name, price, category FROM products WHERE product_id = ${id}`)).rows[0]
             const sql = `DELETE FROM products WHERE product_id = ${id}`
             await conn.query(sql)
             conn.release()

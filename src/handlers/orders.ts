@@ -5,7 +5,7 @@ import authenticate, { authenticateUser, authenticateUserId } from '../middlewar
 
 const orderHandlers = (app: Application) => {
     app.get('/order', index)
-    app.get('/order/:id', show)
+    app.get('/order/:id', authenticate, authenticateUserId, show)
     app.post('/order', authenticate, create)
     app.put('/order/:id', authenticate, authenticateUserId, edit)
     app.delete('/order/:id', authenticate, authenticateUserId, remove)
@@ -15,11 +15,11 @@ const orderHandlers = (app: Application) => {
 const store = new OrderStore()
 
 const index = async (
-    _req: Request,
+    req: Request,
     res: Response
 ) => {
     try {
-        const response = await store.index()
+        const response = await store.index(req.body.admin_password)
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot get orders. ${err}`)
@@ -103,7 +103,7 @@ const orderBy = async (
 ) => {
     try {
 
-        const response = await store.orderBy(req.body.username, req.body.token)
+        const response = await store.orderBy(req.body.username)
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot remove order. ${err}`)

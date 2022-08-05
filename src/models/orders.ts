@@ -12,10 +12,12 @@ type Order = {
 
 class OrderStore {
     index = async (
+        admin_password: string
     ): Promise<Order[] | string> => {
         try {
+            if (admin_password !== process.env.ADMIN_PASSWORD as string) return 'This is only allowed for admins.'
             const conn = await client.connect()
-            const sql = "SELECT * FROM orders"
+            const sql = 'SELECT * FROM orders'
             const result = await conn.query(sql)
             if (result.rowCount === 0) {
                 conn.release()
@@ -23,7 +25,7 @@ class OrderStore {
             }
             const orders: Order[] = result.rows
             for (let i = 0; i < orders.length; i++) {
-                let sqlRelation = `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = ${orders[i].order_id}`
+                const sqlRelation = `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = ${orders[i].order_id}`
                 const products = await conn.query(sqlRelation)
                 orders[i].products = products.rows
             }
@@ -74,7 +76,7 @@ class OrderStore {
             })
             const result: Order = await (await conn.query('SELECT * FROM orders WHERE order_id = LASTVAL()')).rows[0]
             const prods = await conn.query(
-                `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = LASTVAL()`
+                'SELECT product_id, quantity FROM relation_orders_products WHERE order_id = LASTVAL()'
             )
             result.products = prods.rows
             conn.release()
@@ -112,7 +114,7 @@ class OrderStore {
                              VALUES (${id}, ${product.product_id}, ${product.quantity})`
                         )
                     } else {
-                        const new_quantity: number = product.quantity + check.rows[0].quantity;
+                        const new_quantity: number = product.quantity + check.rows[0].quantity
                         await conn.query(
                             `UPDATE relation_orders_products SET quantity = ${new_quantity}
                              WHERE order_id = ${id} AND product_id = ${product.product_id}`
@@ -167,8 +169,7 @@ class OrderStore {
     }
 
     orderBy = async (
-        username: string,
-        token: string
+        username: string
     ): Promise<Order | string> => {
         try {
             const conn = await client.connect()

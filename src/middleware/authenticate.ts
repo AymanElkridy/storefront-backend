@@ -6,7 +6,7 @@ import client from '../database'
 const authenticate = (
     req: Request,
     res: Response,
-    next: Function
+    next: () => void
 ) => {
     try {
         const token: string = req.body.token
@@ -22,7 +22,7 @@ const authenticate = (
 export const authenticateUser = async (
     req: Request,
     res: Response,
-    next: Function
+    next: () => void
 ) => {
         const token: string = req.body.token
         const username: string =  req.body.username
@@ -38,11 +38,13 @@ export const authenticateUser = async (
 export const authenticateUserId = async (
     req: Request,
     res: Response,
-    next: Function
+    next: () => void
 ) => {
         try {
             const token: string = req.body.token
-            const user_id: number =  parseInt((await (await client.connect()).query(`SELECT user_id FROM ${req.originalUrl}s WHERE ${req.originalUrl}_id = ${req.params.id}`)).rows[0])
+            const conn = await client.connect()
+            const user_id: number = parseInt((await conn.query(`SELECT user_id FROM ${req.originalUrl}s WHERE ${req.originalUrl}_id = ${req.params.id}`)).rows[0])
+            conn.release()
             if ((jwtDecode(token) as {user_id: number}).user_id === user_id) {
                 next()
             } else {

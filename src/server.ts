@@ -12,3 +12,5 @@ const port = 3000
 app.listen(port, (): void => {
         console.log(`starting app on port: ${port}`)
 })
+
+export default app

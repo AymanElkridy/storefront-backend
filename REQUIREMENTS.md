@@ -49,10 +49,10 @@ These are the notes from a meeting with the frontend developer that describe wha
 - status of order (active or complete) `status`
 
 |order_id |user_id |status |
-|---:|---:|---:|---:|---:|
+|---:|---:|---:|
 |SERIAL PRIMARY KEY |INTEGER REFERENCES users(user_id) |VARCHAR(10) |
 
 #### Relation_Orders_Products
 |order_id |product_id |quantity |
-|---:|---:|---:|---:|---:|
+|---:|---:|---:|
 |INTEGER REFERENCES orders(order_id) |INTEGER REFERENCES products(product_id) |INTEGER |

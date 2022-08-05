@@ -211,21 +211,21 @@ After following the previous steps, you will have the minimum requirements to us
         "status": (a boolean value that if set to 'true' changes the order status from active to completed, *optional*),
         "add": [
             {
-                product_id: (the id of the product desired to add to the order),
-                quantity: (desired quantity of the product mentioned above)
+                "product_id": (the id of the product desired to add to the order),
+                "quantity": (desired quantity of the product mentioned above)
             },
             ...
         ] (an array of products to add to order, *optional*),
         "change": [
             {
-                product_id: (the id of the product desired to change its quantity in the order),
-                quantity: (desired new quantity of the product mentioned above)
+                "product_id": (the id of the product desired to change its quantity in the order),
+                "quantity": (desired new quantity of the product mentioned above)
             },
             ...
         ] (an array of products to change their quantity in order, *optional*),
         "remove": [
             {
-                product_id: (the id of the product desired to remove from the order)
+                "product_id": (the id of the product desired to remove from the order)
             },
             ...
         ] (an array of products to remove from order, *optional*),

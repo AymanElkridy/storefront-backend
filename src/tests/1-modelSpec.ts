@@ -50,8 +50,8 @@ describe('Products model testing', () => {
 
 describe('Orders model testing', () => {
     it('expects create to return an order created', async () => {
-        const order = await orderStore.create([{product_id: 1, quantity: 5}, {product_id: 2, quantity: 2}], 1, 'completed')
-        expect(order).toEqual({order_id: 1, user_id: 1, status: 'completed', products: [
+        const order = await orderStore.create([{product_id: 1, quantity: 5}, {product_id: 2, quantity: 2}], 1)
+        expect(order).toEqual({order_id: 1, user_id: 1, status: 'active', products: [
             {product_id: 1, quantity: 5},
             {product_id: 2, quantity: 2}
         ]})
@@ -59,14 +59,14 @@ describe('Orders model testing', () => {
 
     it('expects show to return an order', async () => {
         const order = await orderStore.show(1)
-        expect(order).toEqual({order_id: 1, user_id: 1, status: 'completed', products: [
+        expect(order).toEqual({order_id: 1, user_id: 1, status: 'active', products: [
             {product_id: 1, quantity: 5},
             {product_id: 2, quantity: 2}
         ]})
     })
 
-    it('expects orderBy to return last order by user', async () => {
-        await orderStore.create([{product_id: 1, quantity: 3}, {product_id: 2, quantity: 3}], 1, 'active')
+    it('expects orderBy to return active order by user', async () => {
+        await orderStore.create([{product_id: 1, quantity: 3}, {product_id: 2, quantity: 3}], 1)
         const orders = await orderStore.orderBy('ayman')
         expect(orders).toEqual(
             {order_id: 2, user_id: 1, status: 'active', products: [

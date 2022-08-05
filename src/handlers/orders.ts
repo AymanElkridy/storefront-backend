@@ -20,6 +20,11 @@ const index = async (
 ) => {
     try {
         const response = await store.index(req.body.admin_password)
+        if (typeof(response) == 'string') {
+            res.status(400)
+        } else {
+            res.status(200)
+        }
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot get orders. ${err}`)
@@ -32,6 +37,11 @@ const show = async (
 ) => {
     try {
         const response = await store.show(parseInt(req.params.id))
+        if (typeof(response) == 'string') {
+            res.status(400)
+        } else {
+            res.status(200)
+        }
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot get order. ${err}`)
@@ -45,9 +55,13 @@ const create = async (
     try {
         const response = await store.create(
             req.body.products,
-            (jwtDecode(req.body.token) as {user_id: number}).user_id,
-            req.body.status
+            (jwtDecode(req.body.token) as {user_id: number}).user_id
         )
+        if (typeof(response) == 'string') {
+            res.status(400)
+        } else {
+            res.status(200)
+        }
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot create order. ${err}`)
@@ -71,7 +85,7 @@ const edit = async (
             remove?: {
                 product_id: number
             }[]
-            status?: string
+            status?: boolean
         }
         const options: Options = {}
         if (req.body.add) options.add = req.body.add
@@ -79,6 +93,11 @@ const edit = async (
         if (req.body.remove) options.remove = req.body.remove
         if (req.body.status) options.status = req.body.status
         const response = await store.edit(parseInt(req.params.id), options)
+        if (typeof(response) == 'string') {
+            res.status(400)
+        } else {
+            res.status(200)
+        }
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot edit order. ${err}`)
@@ -91,6 +110,11 @@ const remove = async (
 ) => {
     try {
         const response = await store.remove(parseInt(req.params.id))
+        if (typeof(response) == 'string') {
+            res.status(400)
+        } else {
+            res.status(200)
+        }
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot remove order. ${err}`)
@@ -104,6 +128,11 @@ const orderBy = async (
     try {
 
         const response = await store.orderBy(req.body.username)
+        if (typeof(response) == 'string') {
+            res.status(400)
+        } else {
+            res.status(200)
+        }
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot remove order. ${err}`)

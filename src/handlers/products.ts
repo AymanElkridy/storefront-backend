@@ -19,6 +19,11 @@ const index = async (
 ) => {
     try {
         const response = await store.index()
+        if (typeof(response) == 'string') {
+            res.status(400)
+        } else {
+            res.status(200)
+        }
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot get products. ${err}`)
@@ -31,6 +36,11 @@ const show = async (
  ) => {
     try {
         const response = await store.show(parseInt(req.params.id))
+        if (typeof(response) == 'string') {
+            res.status(400)
+        } else {
+            res.status(200)
+        }
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot get product. ${err}`)
@@ -48,6 +58,11 @@ const create = async (
             req.body.category,
             (jwtDecode(req.body.token) as {user_id: number}).user_id
         )
+        if (typeof(response) == 'string') {
+            res.status(400)
+        } else {
+            res.status(200)
+        }
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot create product. ${err}`)
@@ -69,6 +84,11 @@ const edit = async (
         if (req.body.price) options.price = parseFloat(req.body.price)
         if (req.body.category) options.category = req.body.categeory
         const response = await store.edit(parseInt(req.params.id), options)
+        if (typeof(response) == 'string') {
+            res.status(400)
+        } else {
+            res.status(200)
+        }
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot edit product. ${err}`)
@@ -81,6 +101,11 @@ const remove = async (
 ) => {
     try {
         const response = await store.remove(parseInt(req.params.id))
+        if (typeof(response) == 'string') {
+            res.status(400)
+        } else {
+            res.status(200)
+        }
         res.json(response)
     } catch (err) {
         throw new Error(`Cannot remove product. ${err}`)

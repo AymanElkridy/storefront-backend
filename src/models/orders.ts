@@ -63,12 +63,12 @@ class OrderStore {
             product_id: number
             quantity: number
         }[],
-        user_id: number,
-        status: string
+        user_id: number
     ): Promise<Order> => {
         try {
             const conn = await client.connect()
-            const sql = `INSERT INTO orders (user_id, status) VALUES(${user_id}, '${status}')`
+            await conn.query(`UPDATE orders SET status = 'completed' WHERE user_id = ${user_id}`)
+            const sql = `INSERT INTO orders (user_id, status) VALUES(${user_id}, 'active')`
             await conn.query(sql)
             products.map(async product => {
                 const sqlRelation = `INSERT INTO relation_orders_products (order_id, product_id, quantity) VALUES (LASTVAL(), ${product.product_id}, ${product.quantity})`
@@ -100,7 +100,7 @@ class OrderStore {
             remove?: {
                 product_id: number
             }[],
-            status?: string
+            status?: boolean
         }
     ): Promise<Order> => {
         try {
@@ -138,7 +138,7 @@ class OrderStore {
                     )
                 })
             }
-            if (options?.status) await conn.query(`UPDATE orders SET status = '${options.status}' WHERE order_id = ${id}`)
+            if (options?.status) await conn.query(`UPDATE orders SET status = 'completed' WHERE order_id = ${id}`)
             const result: Order = (await conn.query(`SELECT * FROM orders WHERE order_id = ${id}`)).rows[0]
             const prods = await conn.query(
                 `SELECT product_id, quantity FROM relation_orders_products WHERE order_id = ${id}`

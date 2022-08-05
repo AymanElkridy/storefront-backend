@@ -27,16 +27,19 @@ These are the notes from a meeting with the frontend developer that describe wha
 - price `price`
 - [OPTIONAL] category `category`
 
-##### products
 |product_id |name |price |category |user_id |
 |---:|---:|---:|---:|---:|
-|SERIAL PRIMARY KEY |VARCHAR(100) |FLOAT |VARCHAR(50) | INTEGER REFERENCES users(user_id)|
+|SERIAL PRIMARY KEY |VARCHAR(100) |FLOAT |VARCHAR(50) |INTEGER REFERENCES users(user_id) |
 
 #### User
 - id `user_id`
 - firstName `first_name`
 - lastName `last_name`
 - password `password_digest`
+
+|user_id |username |first_name |last_name |password_digest |
+|---:|---:|---:|---:|---:|
+|SERIAL PRIMARY KEY |VARCHAR(100) |VARCHAR(50) |VARCHAR(50) |VARCHAR(255) |
 
 #### Orders
 - id `order_id`
@@ -45,3 +48,11 @@ These are the notes from a meeting with the frontend developer that describe wha
 - user_id `user_id`
 - status of order (active or complete) `status`
 
+|order_id |user_id |status |
+|---:|---:|---:|---:|---:|
+|SERIAL PRIMARY KEY |INTEGER REFERENCES users(user_id) |VARCHAR(10) |
+
+#### Relation_Orders_Products
+|order_id |product_id |quantity |
+|---:|---:|---:|---:|---:|
+|INTEGER REFERENCES orders(order_id) |INTEGER REFERENCES products(product_id) |INTEGER |
